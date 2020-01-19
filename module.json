@@ -20,6 +20,6 @@
   ],
   "url": "http://your.module.url/here",
   "manifest": "https://raw.githubusercontent.com/kalminos/GURPSmodule/master/module.json",
-  "download": "http://your.packaged.module/directory.zip",
+  "download": "https://github.com/kalminos/GURPSmodule/raw/master/GURPSmodule.zip",
   "minimumCoreVersion" : "0.4.4"
 }
