@@ -19,7 +19,7 @@
     }
   ],
   "url": "http://your.module.url/here",
-  "manifest": "http://raw.module.manifest/link.json",
+  "manifest": "https://raw.githubusercontent.com/kalminos/GURPSmodule/master/module.json",
   "download": "http://your.packaged.module/directory.zip",
   "minimumCoreVersion" : "0.4.4"
 }
