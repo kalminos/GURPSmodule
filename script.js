@@ -1,7 +1,7 @@
 Hooks.on("ready", () => {
     //console.log("Hello Module!");
     //ChatMessage.create({content : "hello world", user : game.user._id, speaker: {alias: "GURPS BOT"},type: CONST.CHAT_MESSAGE_TYPES.OTHER});
-    Ruler.prototype.measure = GURPSRuler
+    Ruler.prototype._getSegmentLabel = GURPSRulerSegmentLabel;
 });
 
 hit = ["Null - 1 - How did this happen? ", // Hit location shit
@@ -283,11 +283,11 @@ var find_length = /([0-9]*\.?[0-9]*)[ ]*(mile[s]?|mi|inch|in|foot|feet|ft|yard[s
 
 function convert_to_yards(numeric, Unit)
 {
-    console.log("entering convert to yards")
+    //console.log("entering convert to yards")
     let meter = 0;
     let unit = Unit.toLowerCase();
-    console.log("Assigning Unit")
-    console.log("Unit in convert_to_yards is " + unit);
+    //console.log("Assigning Unit")
+    //console.log("Unit in convert_to_yards is " + unit);
     if  (unit == "meters" || unit == "meter" || unit == "m")
         meter = numeric
     else if (unit == "millimeters"|| unit == "millimeter"|| unit == "mm")
@@ -491,62 +491,13 @@ Hooks.on("chatMessage", (log, content, data) => {
     
 });
 
-
-
-function GURPSRuler (destination, {gridSpaces=true}={}) {
-    const dest = new PIXI.Point(...canvas.grid.getCenter(destination.x, destination.y)),
-          waypoints = this.waypoints.concat([dest]),
-          r = this.ruler;
-    this.destination = dest;
-    // Get grid highlight layer
-    const hlt = canvas.grid.highlightLayers[this.name];
-    hlt.clear();
-    r.clear();
-    // Track some measurement data
-    let isMulti = waypoints.length > 2;
-    let totalDistance = 0;
-    let units = canvas.scene.data.gridUnits;
-    // Iterate over waypoints
-    for ( let [i, dest] of waypoints.slice(1).entries() ) {
-      let origin = waypoints[i],
-          label = this.labels.children[i];
-      // Compute distance between the two points and bail out if we have not measured far enough yet
-      let ray = new Ray(origin, dest);
-      if ( ray.distance < (0.2 * canvas.grid.size)) {
-        if ( label ) label.visible = false;
-        continue;
-      }
-      // Compute additional Ray data
-      let distance = Math.round(canvas.grid.measureDistance(ray.A, ray.B, {gridSpaces}) * 100) / 100;
-      totalDistance += distance;
-      // Draw line segment
-      r.lineStyle(6, 0x000000, 0.5).moveTo(origin.x, origin.y).lineTo(dest.x, dest.y)
-       .lineStyle(4, this.color, 0.25).moveTo(origin.x, origin.y).lineTo(dest.x, dest.y);
-      // Draw the distance label just after the endpoint of the segment
-      if ( label ) {
-        // Construct label text
-        let isLast = i === waypoints.length - 2,
-            text = `${distance} ${units}`+ gRange2(totalDistance,units);
-            console.log("the original label is: " + `${distance} ${units}`);
-            //console.log("The original label distance +5 is: "`${distance}+5 ${units}`)
-        if ( isMulti && isLast ) {
-          totalDistance = Math.round(totalDistance * 100) / 100;
-          text += ` [${totalDistance} ${units}`+gRange2(totalDistance,units)+"]";
-          console.log(`${totalDistance} ${units}`);
-        }
-        label.text = text;
-        // Toggle label opacity
-        label.alpha = isLast ? 1.0 : 0.5;
-        label.visible = true;
-        // Set label position
-        let labelPosition = ray.project((ray.distance + 50) / ray.distance);
-        label.position.set(labelPosition.x, labelPosition.y);
-      }
-      // Highlight grid positions
-      this._highlightMeasurement(ray);
+function GURPSRulerSegmentLabel (ray, segmentDistance, totalDistance, isTotal)
+{
+    const units = canvas.scene.data.gridUnits;
+    let label = `${segmentDistance} ${units} ${gRange2(segmentDistance,units)}`;
+    if ( isTotal ) {
+      label += ` [${Math.round(totalDistance * 100) / 100} ${units} ${gRange2(totalDistance,units)}]`;
     }
-    // Draw endpoints
-    for ( let point of waypoints ) {
-      r.lineStyle(2, 0x000000, 0.5).beginFill(this.color, 0.25).drawCircle(point.x, point.y, 8);
-    }
-  }
+    return label;
+}
+

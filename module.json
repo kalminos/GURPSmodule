@@ -2,7 +2,7 @@
   "name": "GURPSmodule",
   "title": "Kalos Foundry GURPS Module",
   "description": "Not quite a system (no sheets) but does provide some functionality such as a range ruler",
-  "version": 0.11,
+  "version": 0.2,
   "author": "Kalos",
   "scripts": [
     "./script.js"
