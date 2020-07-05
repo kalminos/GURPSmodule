@@ -313,6 +313,38 @@ function convert_to_yards(numeric, Unit)
     return meter * 1.0936
 }
 
+function yardsToSpeedRangePenalty(yards) {
+    if (yards <= 2) {
+        return 0
+    }
+
+    let reducedYards = yards;
+    let timesReduced = 0;
+    while (reducedYards > 10) {
+        reducedYards /= 10;
+        timesReduced++;
+    }
+
+    let reducedPenalty = 1;
+    if (reducedYards > 1.5) {
+        reducedPenalty = 0;
+    }
+    if (reducedYards > 2) {
+        reducedPenalty = -1;
+    }
+    if (reducedYards > 3) {
+        reducedPenalty = -2;
+    }
+    if (reducedYards > 5) {
+        reducedPenalty = -3;
+    }
+    if (reducedYards > 7) {
+        reducedPenalty = -4;
+    }
+
+    return reducedPenalty - 6 * timesReduced;
+}
+
 function gRange(msg)  // 2 - 6*log(Distance in Yards)
 {
     let range = msg.replace("!range ", "")
@@ -337,7 +369,7 @@ function gRange(msg)  // 2 - 6*log(Distance in Yards)
             //sendChat(BOTNAME, "0 is not a valid size, Give a non-zero length along with a unit, such as 10 meters, or 2km.");
             return
         }
-        let range_result = 2 - 6 * (Math.log(yards) / Math.log(10));
+        let range_result = yardsToSpeedRangePenalty(yards);
         sign = "";
         if (range_result > 0)
             sign = "+";
@@ -359,7 +391,7 @@ function gRange2(distance, unit)  // 2 - 6*log(Distance in Yards)
     let yards = convert_to_yards(numeric, unit);
     if (yards == 0)
         return "N/A";
-    let range_result = 2 - 6 * (Math.log(yards) / Math.log(10));
+    let range_result = yardsToSpeedRangePenalty(yards);
     sign = "";
     if (range_result > 0)
         sign = "+";
